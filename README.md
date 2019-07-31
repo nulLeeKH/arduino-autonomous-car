@@ -1,7 +1,4 @@
 # arduino-autonomous-car
-
-## About
-
 The firmware for Makist's kit which developed for autonomous car racing.
 
 ## Patch Note
