@@ -2,7 +2,7 @@
 
 ## About
 
-Firmware for Makist's kit which developed for autonomous car racing.
+The firmware for Makist's kit which developed for autonomous car racing.
 
 ## Patch Note
 
