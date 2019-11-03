@@ -1,5 +1,5 @@
 /*
-version : v1.0.0-alpha
+version : v1.1.0-alpha
 
 MIT License
 
@@ -61,12 +61,18 @@ Servo servo;
 #define FC_ECHO 10          //Front centre sensor (ECHO pin)
 #define FL_TRIG A4          //Front left sensor (TRIG pin)
 #define FL_ECHO A3          //Front left sensor (ECHO pin)
-#define FR_TRIG 3           //Front left sensor (ECHO pin)
-#define FR_ECHO 4           //Front left sensor (ECHO pin)
+#define FR_TRIG 3           //Front right sensor (ECHO pin)
+#define FR_ECHO 4           //Front right sensor (ECHO pin)
 #define L_TRIG  A2          //Left Sensor (TRIG pin)
 #define L_ECHO  A1          //Left Sensor (ECHO pin)
 #define R_TRIG  A0          //Right sensor (TRIG pin)
 #define R_ECHO  A5          //Right sensor (ECHO pin)
+
+#define FC_CORRECTION 0     //Front center sensor error correction value
+#define FL_CORRECTION 0     //Front left sensor error correction value
+#define FR_CORRECTION 0     //Front right sensor error correction value
+#define L_CORRECTION 0      //Left sensor error correction value
+#define R_CORRECTION 0      //Right sensor error correction value
 
 #define FC_WARNING 0        //Front Central Turning Distance
 #define FR_WARNING 0        //Front right turn distance
@@ -276,11 +282,11 @@ void setup() {
 void loop() {
     Driving driving;
 
-    float fcdis = driving.GetDistance(FC_TRIG, FC_ECHO);
-    float frdis = driving.GetDistance(FR_TRIG, FR_ECHO);
-    float fldis = driving.GetDistance(FL_TRIG, FL_ECHO);
-    float rdis = driving.GetDistance(R_TRIG, R_ECHO);
-    float ldis = driving.GetDistance(L_TRIG, L_ECHO);
+    float fcdis = driving.GetDistance(FC_TRIG, FC_ECHO)+FC_CORRECTION;
+    float fldis = driving.GetDistance(FL_TRIG, FL_ECHO)+FL_CORRECTION;
+    float frdis = driving.GetDistance(FR_TRIG, FR_ECHO)+FR_CORRECTION;
+    float ldis = driving.GetDistance(L_TRIG, L_ECHO)+L_CORRECTION;
+    float rdis = driving.GetDistance(R_TRIG, R_ECHO)+R_CORRECTION;
 
     if ((0 < fcdis && fcdis < FC_WARNING) || (0 < frdis && frdis < FR_WARNING) || (0 < fldis && fldis < FL_WARNING)) {
         if (fldis == 0) driving.TurnLeft();
