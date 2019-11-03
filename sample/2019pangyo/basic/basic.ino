@@ -1,5 +1,5 @@
 /*
-version : v1.1.0-alpha
+version : v1.1.1-alpha
 
 MIT License
 
@@ -47,16 +47,17 @@ Servo servo;
 //Motor 2 connection (right)
 
 #define SERVO_PIN 9         //Steering (Surbo Motor Connection Pin)
-#define TD_LEFT  -63        //Left turn angle [-90 to 90]
-#define TD_RIGHT  63        //Right turn angle [-90 to 90]
-#define GD_LEFT -30         //Correction angle of the mail direction during central driving [-90 to 90]
-#define GD_RIGHT 30         //Angle of correction of left side shape during central driving [-90 to 90]
+#define TD_LEFT  -76        //Left turn angle [-90 to 90]
+#define TD_RIGHT  76        //Right turn angle [-90 to 90]
+#define GD_LEFT -15         //Correction angle of the mail direction during central driving [-90 to 90]
+#define GD_RIGHT 15         //Angle of correction of left side shape during central driving [-90 to 90]
 #define TD_MIDDLE 0         //Straight Angle [-90-90]
-#define S_HIGH 255          //Outer wheel speed when driving [0-255]
-#define S_SLOW 127          //Inner wheel speed when driving [0-255]
-#define S_SLOWER 63         //Deceleration at low speed [0-255]
+#define INST_TURN 38        //Distance difference for running instant turn [0- ]
+#define S_HIGH 245          //Outer wheel speed when driving [0-255]
+#define S_SLOW 235          //Inner wheel speed when driving [0-255]
+#define S_SLOWER 150        //Deceleration at low speed [0-255]
 #define S_BREAK 255         //Brake strength [0-255]
-#define T_BREAK 120         //Brake duration
+#define T_BREAK 15          //Brake duration [0- ]
 
 #define FC_TRIG 13          //Front center sensor (TRIG pin)
 #define FC_ECHO 10          //Front centre sensor (ECHO pin)
@@ -73,15 +74,15 @@ Servo servo;
 #define FL_CORRECTION 0     //Front left sensor error correction value
 #define FR_CORRECTION 0     //Front right sensor error correction value
 #define L_CORRECTION 0      //Left sensor error correction value
-#define R_CORRECTION 0      //Right sensor error correction value
+#define R_CORRECTION -25    //Right sensor error correction value
 
-#define FC_WARNING 69       //Front Central Turning Distance
-#define FR_WARNING 66       //Front right turn distance
-#define FL_WARNING 66       //Front left turn distance
-#define FC_PREPARE 120      //Front Central Slow Drive
+#define FC_WARNING 70       //Front Central Turning Distance
+#define FR_WARNING 62       //Front right turn distance
+#define FL_WARNING 62       //Front left turn distance
+#define FC_PREPARE 130      //Front Central Slow Drive
 
-#define T_BACK 210          //Reverse distance when turning
-#define T_FRONT 120         //Direct distance when turning
+#define T_BACK 320          //Reverse distance when turning
+#define T_FRONT 240         //Direct distance when turning
 
 #define INTIAL_STRAIGHT 0   //Direct distance during initial execution
 #define INTIAL_DEGREE 0     //Turn direction for initial execution (left : 0; right : 1)
@@ -151,11 +152,13 @@ class Driving{
                 WheelGo(W_LEFT, D_FRONT, S_HIGH);
                 WheelGo(W_RIGHT, D_FRONT, S_SLOW);
             } else if (rdis < ldis) {
-                TurnSteering(GD_LEFT);
+                if (-INST_TURN<ldis-rdis && ldis-rdis<INST_TURN) TurnSteering(GD_LEFT);
+                else TurnSteering(TD_LEFT);
                 WheelGo(W_LEFT, D_FRONT, S_SLOW);
                 WheelGo(W_RIGHT, D_FRONT, S_HIGH);
             } else {
-                TurnSteering(GD_RIGHT);
+                if (-INST_TURN<ldis-rdis && ldis-rdis<INST_TURN) TurnSteering(GD_RIGHT);
+                else TurnSteering(TD_RIGHT);
                 WheelGo(W_LEFT, D_FRONT, S_HIGH);
                 WheelGo(W_RIGHT, D_FRONT, S_SLOW);
             }
@@ -171,18 +174,20 @@ class Driving{
                 WheelGo(W_LEFT, D_FRONT, S_HIGH - S_SLOWER);
                 WheelGo(W_RIGHT, D_FRONT, S_SLOW - S_SLOWER);
             } else if (rdis < ldis) {
-                TurnSteering(GD_LEFT);
+                if (-INST_TURN<ldis-rdis && ldis-rdis<INST_TURN) TurnSteering(GD_LEFT);
+                else TurnSteering(TD_LEFT);
                 WheelGo(W_LEFT, D_FRONT, S_SLOW - S_SLOWER);
                 WheelGo(W_RIGHT, D_FRONT, S_HIGH - S_SLOWER);
             } else {
-                TurnSteering(GD_RIGHT);
+                if (-INST_TURN<ldis-rdis && ldis-rdis<INST_TURN) TurnSteering(GD_RIGHT);
+                else TurnSteering(TD_RIGHT);
                 WheelGo(W_LEFT, D_FRONT, S_HIGH - S_SLOWER);
                 WheelGo(W_RIGHT, D_FRONT, S_SLOW - S_SLOWER);
             }
         }   //Centralized by straight ahead - Slow down when approaching obstacles
 
         void TurnLeft() {
-            TurnSteering(TD_RIGHT);
+            TurnSteering(TD_RIGHT/2);
             WheelGo(W_LEFT, D_BACK, S_HIGH);
             WheelGo(W_RIGHT, D_BACK, S_HIGH);
             delay(T_BACK);
@@ -194,7 +199,7 @@ class Driving{
         }   //Turn to the left
 
         void TurnRight() {
-            TurnSteering(TD_LEFT);
+            TurnSteering(TD_LEFT/2);
             WheelGo(W_LEFT, D_BACK, S_HIGH);
             WheelGo(W_RIGHT, D_BACK, S_HIGH);
             delay(T_BACK);
@@ -283,11 +288,16 @@ void setup() {
 void loop() {
     Driving driving;
 
-    float fcdis = driving.GetDistance(FC_TRIG, FC_ECHO)+FC_CORRECTION;
-    float fldis = driving.GetDistance(FL_TRIG, FL_ECHO)+FL_CORRECTION;
-    float frdis = driving.GetDistance(FR_TRIG, FR_ECHO)+FR_CORRECTION;
-    float ldis = driving.GetDistance(L_TRIG, L_ECHO)+L_CORRECTION;
-    float rdis = driving.GetDistance(R_TRIG, R_ECHO)+R_CORRECTION;
+    float fcdis = driving.GetDistance(FC_TRIG, FC_ECHO);
+    if (fcdis != 0) fcdis+=FC_CORRECTION;
+    float fldis = driving.GetDistance(FL_TRIG, FL_ECHO);
+    if (fldis != 0) fcdis+=FL_CORRECTION;
+    float frdis = driving.GetDistance(FR_TRIG, FR_ECHO);
+    if (frdis != 0) fcdis+=FR_CORRECTION;
+    float ldis = driving.GetDistance(L_TRIG, L_ECHO);
+    if (ldis != 0) fcdis+=L_CORRECTION;
+    float rdis = driving.GetDistance(R_TRIG, R_ECHO);
+    if (fcdis != 0) fcdis+=R_CORRECTION;
 
     if ((0 < fcdis && fcdis < FC_WARNING) || (0 < frdis && frdis < FR_WARNING) || (0 < fldis && fldis < FL_WARNING)) {
         if (fldis == 0) driving.TurnLeft();
@@ -299,5 +309,5 @@ void loop() {
     else if (0 < fcdis && fcdis < FC_PREPARE) driving.Straight_s(fcdis, rdis, ldis);
     else driving.Straight_f(fcdis, rdis, ldis);
 
-    delay(3);
+    delay(1);
 }   //Main routine
