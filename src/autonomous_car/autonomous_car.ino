@@ -1,5 +1,5 @@
 /*
-  version : v1.1.1-alpha
+  version : v1.1.2-alpha
 
   MIT License
 
@@ -144,11 +144,11 @@ class Driving {
 
     void Straight_f(float fcdis, float rdis, float ldis) {
       if (ldis == 0) {
-        TurnSteering(GD_LEFT);
+        TurnSteering(TD_LEFT);
         WheelGo(W_LEFT, D_FRONT, S_SLOW);
         WheelGo(W_RIGHT, D_FRONT, S_HIGH);
       } else if (rdis == 0) {
-        TurnSteering(GD_RIGHT);
+        TurnSteering(TD_RIGHT);
         WheelGo(W_LEFT, D_FRONT, S_HIGH);
         WheelGo(W_RIGHT, D_FRONT, S_SLOW);
       } else if (rdis < ldis) {
@@ -166,11 +166,11 @@ class Driving {
 
     void Straight_s(float fcdis, float rdis, float ldis) {
       if (ldis == 0) {
-        TurnSteering(GD_LEFT);
+        TurnSteering(TD_LEFT);
         WheelGo(W_LEFT, D_FRONT, S_SLOW - S_SLOWER);
         WheelGo(W_RIGHT, D_FRONT, S_HIGH - S_SLOWER);
       } else if (rdis == 0) {
-        TurnSteering(GD_RIGHT);
+        TurnSteering(TD_RIGHT);
         WheelGo(W_LEFT, D_FRONT, S_HIGH - S_SLOWER);
         WheelGo(W_RIGHT, D_FRONT, S_SLOW - S_SLOWER);
       } else if (rdis < ldis) {
@@ -284,20 +284,19 @@ void setup() {
 
   delay(T_START);
 }   //Initial routine
-
 void loop() {
   Driving driving;
 
   float fcdis = driving.GetDistance(FC_TRIG, FC_ECHO);
   if (fcdis != 0) fcdis += FC_CORRECTION;
   float fldis = driving.GetDistance(FL_TRIG, FL_ECHO);
-  if (fldis != 0) fcdis += FL_CORRECTION;
+  if (fldis != 0) fldis += FL_CORRECTION;
   float frdis = driving.GetDistance(FR_TRIG, FR_ECHO);
-  if (frdis != 0) fcdis += FR_CORRECTION;
+  if (frdis != 0) frdis += FR_CORRECTION;
   float ldis = driving.GetDistance(L_TRIG, L_ECHO);
-  if (ldis != 0) fcdis += L_CORRECTION;
+  if (ldis != 0) ldis += L_CORRECTION;
   float rdis = driving.GetDistance(R_TRIG, R_ECHO);
-  if (fcdis != 0) fcdis += R_CORRECTION;
+  if (rdis != 0) rdis += R_CORRECTION;
 
   if ((0 < fcdis && fcdis < FC_WARNING) || (0 < frdis && frdis < FR_WARNING) || (0 < fldis && fldis < FL_WARNING)) {
     if (fldis == 0) driving.TurnLeft();

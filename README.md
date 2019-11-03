@@ -13,3 +13,7 @@ The firmware for Makist's kit which developed for autonomous car racing.
 ### v1.1.1-alpha
 - Add instant turn function.
 - Add error correction function for sensors.
+
+### v1.1.2-alpha
+- Fix error with error correction function for sensors.
+- Change wheel angel selection method.
