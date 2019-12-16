@@ -1,6 +1,10 @@
 # arduino-autonomous-car
 The firmware for Makist's kit which developed for autonomous car racing.
 
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+[![HitCount](http://hits.dwyl.io/nulLeeKH/arduino-autonomous-car.svg)](http://hits.dwyl.io/nulLeeKH/arduino-autonomous-car)
+![GitHub last commit](https://img.shields.io/github/last-commit/nulLeeKH/arduino-autonomous-car.svg)
+
 - 2019 울산과학기술제전 자율주행자동차 경진대회 (2019 Ulsan Science and Technology Festival Autonomous Car Contest)
 	- Awarded : 금상 - 울산광역시 교육감 노옥희 (1st Prize - Superintendent of Education, Ulsan Metropolitan City)
 - 제3회 판교 자율주행모터쇼 고등학생 자율주행자동차 경진대회 (PAMS 2019 High School Autonomous Car Contest)
